@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Calculator</string>
+    <string name="eins">1</string>
+    <string name="textField" />
+    <string name="zwei">2</string>
+    <string name="sieben">7</string>
+    <string name="acht">8</string>
+    <string name="neun">9</string>
+    <string name="vier">4</string>
+    <string name="fünf">5</string>
+    <string name="sechs">6</string>
+    <string name="geteilt">/</string>
+    <string name="mal">X</string>
+    <string name="drei">3</string>
+    <string name="minus">-</string>
+    <string name="plus">+</string>
+    <string name="gleich">=</string>
+    <string name="zero">0</string>
+    <string name="komma">,</string>
+</resources>
