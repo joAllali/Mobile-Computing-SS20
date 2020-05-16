@@ -1,8 +1,10 @@
 package com.example.randompokemongenerator;
 
+import android.app.DownloadManager;
 import android.content.SyncStatusObserver;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -67,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
         PokeAsyncTask(MainActivity activity){
             activityWeakReference = new WeakReference<MainActivity>(activity);
+
+
         }
 
 
@@ -101,6 +105,29 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            /*
+            TODO:
+                WORKS BUT FOR WRONG REASON
+                Dm somehow triggers method in CompletedBroadcastReceiver
+                -> Use DM to download Image from URL for intended behavior
+            */
+
+            DownloadManager dm = (DownloadManager) activity.getSystemService(DOWNLOAD_SERVICE);
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse("https://www.google.com/images/srpr/logo4w.png"))               .setTitle("Dummy File")// Title of the Download Notification
+                    .setDescription("Downloading")// Description of the Download Notification
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)// Visibility of the download Notification
+                    .setRequiresCharging(false)// Set if charging is required to begin the download
+                    .setAllowedOverMetered(true)// Set if download is allowed on Mobile network
+                    .setAllowedOverRoaming(true);// Set if download is allowed on roaming network;
+                    //.setDestinationUri(Uri.fromFile(file))// Uri of the destination file
+            dm.enqueue(request);
+
+            /*
+            TODO:
+                Could be deleted until here and replaced with general Toast message
+                Still need to find correct location for this code. Probaply most of it in the doInBackground
+                method but activityWeakReference doesn't allow calls to activity (maybe just global variable)
+            */
 
             ImageView iv = activity.pokemonDisplay;
             iv.setImageDrawable(image);
@@ -120,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static Drawable loadImageFromWebOperations(String url) {
+
+
+
         System.out.println(url);
         try {
             InputStream is = (InputStream) new URL(url).getContent();
