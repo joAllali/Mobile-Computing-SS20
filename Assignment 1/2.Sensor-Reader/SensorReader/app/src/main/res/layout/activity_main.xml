@@ -8,18 +8,19 @@
 
     <TextView
         android:id="@+id/tvAccY"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
         android:text="@string/accY2"
         app:layout_constraintBottom_toTopOf="@+id/tvAccZ"
         app:layout_constraintEnd_toStartOf="@+id/accY"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvAccX" />
 
     <TextView
         android:id="@+id/tvAccX"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
         android:text="@string/accX"
         app:layout_constraintBottom_toTopOf="@+id/tvAccY"
         app:layout_constraintEnd_toStartOf="@+id/accX"
@@ -29,8 +30,8 @@
 
     <TextView
         android:id="@+id/tvAccZ"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
         android:text="@string/accZ2"
         app:layout_constraintBottom_toTopOf="@+id/tvGyroX"
         app:layout_constraintEnd_toStartOf="@+id/accZ"
@@ -40,38 +41,41 @@
 
     <TextView
         android:id="@+id/tvGyroX"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="124dp"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
         android:text="@string/gyroX2"
         app:layout_constraintBottom_toTopOf="@+id/tvGyroY"
+        app:layout_constraintEnd_toStartOf="@+id/gyroX"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvAccZ" />
 
     <TextView
         android:id="@+id/tvGyroY"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="124dp"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
         android:text="@string/gyroY2"
         app:layout_constraintBottom_toTopOf="@+id/tvGyroZ"
+        app:layout_constraintEnd_toStartOf="@+id/gyroY"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvGyroX" />
 
     <TextView
         android:id="@+id/tvGyroZ"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="124dp"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
         android:text="@string/gyroZ2"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/gyroZ"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvGyroY" />
 
     <TextView
         android:id="@+id/accX"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
         app:layout_constraintBottom_toTopOf="@+id/accY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -80,48 +84,52 @@
 
     <TextView
         android:id="@+id/gyroX"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
         app:layout_constraintBottom_toTopOf="@+id/gyroY"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/tvGyroX"
         app:layout_constraintTop_toBottomOf="@+id/accZ" />
 
     <TextView
         android:id="@+id/gyroY"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
         app:layout_constraintBottom_toTopOf="@+id/gyroZ"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/tvGyroY"
         app:layout_constraintTop_toBottomOf="@+id/gyroX" />
 
     <TextView
         android:id="@+id/gyroZ"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/tvGyroZ"
         app:layout_constraintTop_toBottomOf="@+id/gyroY" />
 
     <TextView
         android:id="@+id/accY"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="124dp"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
         app:layout_constraintBottom_toTopOf="@+id/accZ"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvAccY"
         app:layout_constraintTop_toBottomOf="@+id/accX" />
 
     <TextView
         android:id="@+id/accZ"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
         app:layout_constraintBottom_toTopOf="@+id/gyroX"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/tvAccZ"
         app:layout_constraintTop_toBottomOf="@+id/accY" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

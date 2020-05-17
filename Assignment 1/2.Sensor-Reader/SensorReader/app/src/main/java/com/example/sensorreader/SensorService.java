@@ -24,16 +24,17 @@ public class SensorService extends Service implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accSensor;
     private Sensor gyroSensor;
+    private boolean accSensorListenerRegistered = false;
+    private boolean gyroSensorListenerRegistered = false;
     private boolean sensorListenerRegistered = false;
 
-    private TextView tvAccX, tvAccY, tvAccZ, tvGyroX, tvGyroY, tvGyroZ;
     private float accX, accY, accZ, gyroX, gyroY,gyroZ;
 
     private class SensorServiceImpl extends ISensorReader.Stub {
 
         @Override
         public float[] readData() throws RemoteException {
-            return new float[]{accX,accY,accZ};
+            return new float[]{accX,accY,accZ, gyroX, gyroY,gyroZ};
         }
     }
 
@@ -50,9 +51,15 @@ public class SensorService extends Service implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        accX = event.values[0];
-        accY = event.values[1];
-        accZ = event.values[2];
+        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            accX = event.values[0];
+            accY = event.values[1];
+            accZ = event.values[2];
+        } else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            gyroX = event.values[0];
+            gyroY = event.values[1];
+            gyroZ = event.values[2];
+        }
     }
 
     @Override
@@ -66,10 +73,20 @@ public class SensorService extends Service implements SensorEventListener {
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "Binding service");
         if (sensorManager.registerListener(this, accSensor, period)) {
-            Log.i(TAG, "Registered sensor listener");
+            Log.i(TAG, "Registered accSensor listener");
+            accSensorListenerRegistered = true;
+            sensorListenerRegistered = true;
+
+        } else {
+            Log.e(TAG, "Could not register accSensor listener");
+        }
+
+        if (sensorManager.registerListener(this, gyroSensor, period)) {
+            Log.i(TAG, "Registered gyroSensor listener");
+            gyroSensorListenerRegistered = true;
             sensorListenerRegistered = true;
         } else {
-            Log.e(TAG, "Could not register sensor listener");
+            Log.e(TAG, "Could not register gyroSensor listener");
         }
         return impl;
     }

@@ -16,11 +16,15 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
     final private String TAG = MainActivity.class.getCanonicalName();
     private ISensorReader sensorServerProxy = null;
     TextView tvAccX, tvAccY, tvAccZ, tvGyroX, tvGyroY, tvGyroZ;
+    float[] data = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         tvAccX = findViewById(R.id.accX);
         tvAccY = findViewById(R.id.accY);
         tvAccZ = findViewById(R.id.accZ);
+        tvGyroX = findViewById(R.id.gyroX);
+        tvGyroY = findViewById(R.id.gyroY);
+        tvGyroZ = findViewById(R.id.gyroZ);
 
         Intent i = new Intent(this, SensorService.class);
         bindService(i, this, BIND_AUTO_CREATE);
@@ -37,22 +44,47 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     }
 
+    public void displaySensorData()  {
+        try {
+            data = sensorServerProxy.readData();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
+        if(data!=null) {
+            tvAccX.setText("" + data[0]);
+            tvAccY.setText("" + data[1]);
+            tvAccZ.setText("" + data[2]);
+            tvGyroX.setText(""+ data[3]);
+            tvGyroY.setText(""+ data[4]);
+            tvGyroZ.setText(""+ data[5]);
+        } else {
+            Log.e(TAG, "Failed to read sensor data");
+        }
+    }
 
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         Log.i(TAG, "Service connected");
+
         sensorServerProxy = ISensorReader.Stub.asInterface(iBinder);
-        float[] data = null;
-        try {
-            data = sensorServerProxy.readData();
-            tvAccX.setText("" + data[0]);
-            tvAccY.setText("" + data[1]);
-            tvAccZ.setText("" + data[2]);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+
+
+            new Timer().scheduleAtFixedRate(new TimerTask() {
+
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            displaySensorData();
+                        }
+                    });
+
+                }
+            },0,100);
+
     }
 
     @Override
