@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SensorReader</string>
+    <string name="accY">accY</string>
+    <string name="accZ">accZ</string>
+    <string name="gyroX">gyroX</string>
+    <string name="gyroY">gyroY</string>
+    <string name="gyroZ">gyroZ</string>
+    <string name="accX">accX:</string>
+    <string name="accY2">accY:</string>
+    <string name="accZ2">accZ:</string>
+    <string name="gyroX2">gyroX:</string>
+    <string name="gyroY2">gyroY:</string>
+    <string name="gyroZ2">gyroZ:</string>
+</resources>
