@@ -7,19 +7,29 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * This project implements a simple calculator
+ * @author Jonas Allali (2965826), Julian Blumenröther (2985877), Jena Satkunarajan (2965839)
+ */
 public class MainActivity extends AppCompatActivity {
 
     Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9,
     buttonAdd, buttonSub, buttonDiv, buttonMul, buttonEqu, buttonC, buttonComma;
     TextView textView;
+
+    //true if specific operator was used
     boolean add = false;
     boolean sub = false;
     boolean mul = false;
     boolean div = false;
-    boolean any = false; //true if an operator already exists
-    boolean comma = false; //true if comma already used in expression
+
+    boolean comma = true; //true if comma is allowed
     boolean equ = false; //true if "equal" was pressed
+    boolean operator = false; //true if an operator is allowed
+
     float leftInput, rightInput;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +64,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(equ) {
+                    //clear field after a finished calculation
                     textView.setText("");
                     equ = false;
                 }
                 textView.setText(textView.getText() + "0");
+                operator = true;
             }
         });
 
@@ -69,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "1");
+                operator = true;
             }
         });
 
@@ -80,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "2");
+                operator = true;
             }
         });
 
@@ -91,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "3");
+                operator = true;
             }
         });
 
@@ -102,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "4");
+                operator = true;
             }
         });
 
@@ -113,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "5");
+                operator = true;
             }
         });
 
@@ -124,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "6");
+                operator = true;
             }
         });
 
@@ -135,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "7");
+                operator = true;
             }
         });
 
@@ -146,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "8");
+                operator = true;
             }
         });
 
@@ -157,19 +177,21 @@ public class MainActivity extends AppCompatActivity {
                     equ = false;
                 }
                 textView.setText(textView.getText() + "9");
+                operator = true;
             }
         });
 
         buttonComma.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(equ) {
+                if(!operator || equ) {
+                    //add leading zero
                     textView.setText("0");
                     equ = false;
                 }
-                if(!comma) {
+                if(comma) {
                     textView.setText(textView.getText() + ".");
-                    comma = true;
+                    comma = false;
                 }
             }
         });
@@ -177,12 +199,12 @@ public class MainActivity extends AppCompatActivity {
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!any) {
+                if(operator) {
                     leftInput = Float.parseFloat(textView.getText() + "");
                     textView.setText("");
                     add = true;
-                    any = true;
-                    comma = false;
+                    operator = false;
+                    comma = true;
                 }
             }
         });
@@ -190,12 +212,12 @@ public class MainActivity extends AppCompatActivity {
         buttonSub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!any) {
+                if(operator) {
                     leftInput = Float.parseFloat(textView.getText() + "");
                     textView.setText("");
                     sub = true;
-                    any = true;
-                    comma = false;
+                    operator = false;
+                    comma = true;
                 }
             }
         });
@@ -203,12 +225,12 @@ public class MainActivity extends AppCompatActivity {
         buttonMul.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!any) {
+                if(operator) {
                     leftInput = Float.parseFloat(textView.getText() + "");
                     textView.setText("");
                     mul = true;
-                    any = true;
-                    comma = false;
+                    operator = false;
+                    comma = true;
                 }
             }
         });
@@ -216,12 +238,12 @@ public class MainActivity extends AppCompatActivity {
         buttonDiv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!any) {
+                if(operator) {
                     leftInput = Float.parseFloat(textView.getText() + "");
                     textView.setText("");
                     div = true;
-                    any = true;
-                    comma = false;
+                    operator = false;
+                    comma = true;
                 }
             }
         });
@@ -234,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
                 sub = false;
                 mul = false;
                 div = false;
-                any = false;
-                comma = false;
+                operator = false;
+                comma = true;
                 equ = false;
                 leftInput = 0;
                 rightInput = 0;
@@ -245,34 +267,42 @@ public class MainActivity extends AppCompatActivity {
         buttonEqu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(any && textView.getText().length() > 0) {
-                    rightInput = Float.parseFloat(textView.getText() + "");
 
-                    if (add) {
+                    if (add && textView.length() > 0) {
+                        rightInput = Float.parseFloat(textView.getText() + "");
                         textView.setText(rightInput + leftInput + "");
                         add = false;
-                        any = false;
+                        operator = true;
+                        equ = true;
+                        comma = true;
                     }
 
-                    if (sub) {
+                    if (sub && textView.length() > 0) {
+                        rightInput = Float.parseFloat(textView.getText() + "");
                         textView.setText(leftInput - rightInput + "");
                         sub = false;
-                        any = false;
+                        operator = true;
+                        equ = true;
+                        comma = true;
                     }
 
-                    if (mul) {
+                    if (mul && textView.length() > 0) {
+                        rightInput = Float.parseFloat(textView.getText() + "");
                         textView.setText(leftInput * rightInput + "");
                         mul = false;
-                        any = false;
+                        operator = true;
+                        equ = true;
+                        comma = true;
                     }
 
-                    if (div) {
+                    if (div && textView.length() > 0) {
+                        rightInput = Float.parseFloat(textView.getText() + "");
                         textView.setText(leftInput / rightInput + "");
                         div = false;
-                        any = false;
+                        operator = true;
+                        equ = true;
+                        comma = true;
                     }
-                    equ = true;
-                }
             }
         });
     }
