@@ -1,32 +1,26 @@
 package com.example.randompokemongenerator;
 
-import android.app.DownloadManager;
-import android.content.SyncStatusObserver;
+
 import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.net.Uri;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+
 import me.sargunvohra.lib.pokekotlin.client.PokeApi;
 import me.sargunvohra.lib.pokekotlin.client.PokeApiClient;
 import me.sargunvohra.lib.pokekotlin.model.Pokemon;
-import me.sargunvohra.lib.pokekotlin.model.PokemonSpecies;
-import me.sargunvohra.lib.pokekotlin.model.PokemonSprites;
 
-import android.os.StrictMode;
+
+
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -92,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             PokeApi pokeApi = new PokeApiClient();
             Pokemon pokemon = pokeApi.getPokemon(randomNumber);
             publishProgress(60);
-            String url = pokemon.getSprites().getFrontShiny();
+            String url = pokemon.getSprites().getFrontDefault();
             Drawable image = loadImageFromWebOperations(url);
             publishProgress(100);
             return image;
@@ -105,29 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            /*
-            TODO:
-                WORKS BUT FOR WRONG REASON
-                Dm somehow triggers method in CompletedBroadcastReceiver
-                -> Use DM to download Image from URL for intended behavior
-            */
 
-            DownloadManager dm = (DownloadManager) activity.getSystemService(DOWNLOAD_SERVICE);
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse("https://www.google.com/images/srpr/logo4w.png"))               .setTitle("Dummy File")// Title of the Download Notification
-                    .setDescription("Downloading")// Description of the Download Notification
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)// Visibility of the download Notification
-                    .setRequiresCharging(false)// Set if charging is required to begin the download
-                    .setAllowedOverMetered(true)// Set if download is allowed on Mobile network
-                    .setAllowedOverRoaming(true);// Set if download is allowed on roaming network;
-                    //.setDestinationUri(Uri.fromFile(file))// Uri of the destination file
-            dm.enqueue(request);
-
-            /*
-            TODO:
-                Could be deleted until here and replaced with general Toast message
-                Still need to find correct location for this code. Probaply most of it in the doInBackground
-                method but activityWeakReference doesn't allow calls to activity (maybe just global variable)
-            */
+            Toast.makeText(activity.getApplicationContext() , "Download Complete", Toast.LENGTH_SHORT).show();
 
             ImageView iv = activity.pokemonDisplay;
             iv.setImageDrawable(image);
@@ -147,8 +120,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static Drawable loadImageFromWebOperations(String url) {
-
-
 
         System.out.println(url);
         try {
@@ -171,25 +142,4 @@ public class MainActivity extends AppCompatActivity {
         return r.nextInt((maxbound - minbound) + 1) + minbound;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
