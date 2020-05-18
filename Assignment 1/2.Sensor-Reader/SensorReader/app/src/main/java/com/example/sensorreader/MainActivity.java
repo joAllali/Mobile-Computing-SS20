@@ -1,24 +1,20 @@
 package com.example.sensorreader;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.TextView;
-
 import java.util.Timer;
 import java.util.TimerTask;
-
+/**
+ *This implements a client who retrieves sensor data from a service and displays it
+ * @author Jonas Allali (2965826), Julian Blumenröther (2985877), Jena Satkunarajan (2965839)
+ */
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
     final private String TAG = MainActivity.class.getCanonicalName();
@@ -40,8 +36,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         Intent i = new Intent(this, SensorService.class);
         bindService(i, this, BIND_AUTO_CREATE);
-
-
     }
 
     public void displaySensorData()  {
@@ -70,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         sensorServerProxy = ISensorReader.Stub.asInterface(iBinder);
 
-
+            //display the data every 100 milliseconds
             new Timer().scheduleAtFixedRate(new TimerTask() {
 
                 @Override
