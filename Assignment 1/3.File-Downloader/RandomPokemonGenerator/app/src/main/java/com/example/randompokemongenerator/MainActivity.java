@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.networkProgressBar);
         pokemonDisplay = findViewById(R.id.pokemonDisplay);
         generatePokemon = findViewById(R.id.btnGenerate);
+
+
         generatePokemon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
                 startAsyncTask(v);
             }
         });
+
+
     }
 
     public void startAsyncTask(View v){
@@ -58,13 +62,12 @@ public class MainActivity extends AppCompatActivity {
         task.execute(randomNumber);
     }
 
+
     private static class PokeAsyncTask extends AsyncTask<Integer, Integer, Drawable>{
         private WeakReference<MainActivity> activityWeakReference;
 
         PokeAsyncTask(MainActivity activity){
             activityWeakReference = new WeakReference<MainActivity>(activity);
-
-
         }
 
 
