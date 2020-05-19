@@ -29,12 +29,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     OP currOP = OP.UNINITIALIZED; //holds the currently selected operator
 
     boolean comma = true; //true if comma is allowed
-    boolean equ = false; //true if "equal" was pressed
     boolean operator = false; //true if an operator is allowed
+    boolean equ = false; //true if "equal" was pressed
 
 
     float leftInput, rightInput, result = 0; //left and right input, result also functions as a (sort of) buffer
-    String buffer = "";//a buffer to hold intermediate inputs
+    String buffer = ""; //a buffer to hold intermediate inputs
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,18 +84,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonComma.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!operator || equ) {
-                    //add leading zero
+                if(!operator) {
+                    //add leading zero if needed
                     buffer += "0";
                     textView.setText(textView.getText() + "0");
                     result = 0;
-                    equ = false;
                 }
                 if(comma) {
+                    //update buffer if comma is appended to most recent (intermed.) result
+                    //we need this iff comma-button is pressed immediately after displaying result
+                    if(buffer == "") {
+                        buffer = Integer.toString((int) result);
+                    }
                     buffer += ".";
                     textView.setText(textView.getText() + ".");
                     comma = false;
                 }
+                equ = false;
             }
         });
 
@@ -141,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             result = 0;
                             break;
                     }
+                    //check if number is whole and display with or without decimal part
                     if(result % 1 == 0) {
                         textView.setText(Integer.toString((int) result));
                         comma = true;
@@ -202,6 +208,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.buttonGeteilt:
                 operatorAction(OP.DIV, "\u00F7");
                 break;
+            default:
+                return;
         }
     }
 
@@ -220,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void operatorAction(OP op, String symbol) {
         if(operator) {
+            //this only occurs if calculation is proceeded on an intermediate result
             if(buffer == "") {
                 if(result % 1 == 0) {
                     buffer = Integer.toString((int) result);
