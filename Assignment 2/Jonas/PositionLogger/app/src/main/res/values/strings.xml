@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">PositionLogger</string>
+    <string name="tvLat">Latitude:</string>
+    <string name="tvLong">Longitude:</string>
+    <string name="tvDist">Distance:</string>
+    <string name="tvSpeed">Average Speed:</string>
+    <string name="btStart">Start Service</string>
+    <string name="btStop">Stop Service</string>
+    <string name="btUpdate">Update Service</string>
+    <string name="btExit">Exit</string>
+</resources>
