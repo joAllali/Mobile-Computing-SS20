@@ -22,12 +22,20 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * This implements a Service which reads location data
  * @author Jonas Allali (2965826), Julian Blumenröther (2985877), Jena Satkunarajan (2965839)
  */
 public class LocationService extends Service implements LocationListener {
     public static String TAG = LocationService.class.getCanonicalName();
+
+    private Location location;
+    private double lastLat;
+    private double lastLon;
+    private double startTime;
 
 
     //Minimum time between location updates [ms]
@@ -38,7 +46,9 @@ public class LocationService extends Service implements LocationListener {
     static private final int MY_PERMISSION_REQUEST_FINE_LOCATION = 1;
 
     private LocationManager locationManager;
-    private double lat, lon, dist, speed;
+    private double lat, lon;
+    private double distance = 0; //in m
+    private double speed = 0; //in km/h
 
     /**Stuff for Activity-Service Communication*/
 //    //Binder given to clients
@@ -70,7 +80,7 @@ public class LocationService extends Service implements LocationListener {
 
         @Override
         public double getDistance() throws RemoteException {
-            return dist;
+            return distance;
         }
 
         @Override
@@ -89,10 +99,14 @@ public class LocationService extends Service implements LocationListener {
     }
     @Override
     public void onLocationChanged(Location location) {
-        Log.i(TAG,"Location data changed");
+        if(this.location != null) {
+            distance = (distance + location.distanceTo(this.location));
+        }
         lon = location.getLongitude();
-       lat = location.getLatitude();
-       //speed = location.getSpeed();
+        lat = location.getLatitude();
+        this.location = location;
+        double overallTime = (Calendar.getInstance().getTime().getTime() - startTime) / 1000 / 60 / 60;//in hours
+        speed =  (distance / 1000) / overallTime;
     }
 
     @Override
@@ -133,7 +147,8 @@ public class LocationService extends Service implements LocationListener {
                         minDistance,  this);
             }
         }
-
+        startTime = Calendar.getInstance().getTime().getTime();
+        //location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         return impl;
     }
 

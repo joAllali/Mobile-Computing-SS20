@@ -21,7 +21,11 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,11 +41,16 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     static private final int MY_PERMISSION_REQUEST_FINE_LOCATION = 1;
 
-    private TextView tvLong, tvLat;
+    private TextView tvLong, tvLat, tvDist, tvSpeed;
+
+    Button btStart, btExit, btStop, btUpdate;
 
     private ILocationReader locationServerProxy = null;
 
-    private double lat, lon, dist, speed;
+    private double lat, lon, distance, speed;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +59,78 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         Log.i(TAG, "MainActivity created");
 
+        View layout = findViewById(R.id.main_layout_id);
+        final Snackbar snackbarStart = Snackbar.make(layout,"Service started",Snackbar.LENGTH_LONG);
+        final Snackbar snackbarStop = Snackbar.make(layout,"Service stopped",Snackbar.LENGTH_LONG);
+
         tvLong = findViewById(R.id.textView4);
         tvLat = findViewById(R.id.textView2);
+        tvDist = findViewById(R.id.textView6);
+        tvSpeed = findViewById(R.id.textView8);
+
+        btStart = findViewById(R.id.btStart);
+        btExit = findViewById(R.id.btExit);
+        btStop = findViewById(R.id.btStop);
+        btUpdate = findViewById(R.id.btUpdate);
+
+        btStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "Service started");
+                Intent i = new Intent(MainActivity.this, LocationService.class);
+                bindService(i, MainActivity.this, BIND_AUTO_CREATE);
+
+                snackbarStart.show();
+            }
+        });
+
+        btExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "MainActivity destroyed");
+                if(locationServerProxy != null) {
+                    unbindService(MainActivity.this);
+                }
+                MainActivity.this.finishAndRemoveTask();
+            }
+
+        });
+
+        btStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"Service disconnected");
+                locationServerProxy = null;
+                unbindService(MainActivity.this);
+                snackbarStop.show();
+            }
+        });
+
+        btUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(locationServerProxy != null) {
+                                    displayLocationData();
+                                }
+                            }
+                        });
+
+                    }
+
+
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(TAG, "MainActivity started");
-        Intent i = new Intent(this, LocationService.class);
-        bindService(i, this, BIND_AUTO_CREATE);
+
 
        //locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
@@ -67,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         Log.i(TAG, "Service connected");
-
         locationServerProxy = ILocationReader.Stub.asInterface(service);
 
         //display the data every 100 milliseconds
@@ -78,24 +148,28 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        displayLocationData();
+                        if(locationServerProxy != null) {
+                            displayLocationData();
+                        }
                     }
                 });
 
             }
-        },0,100);
+        },0,1000);
     }
 
     public void displayLocationData()  {
         try {
             lat = locationServerProxy.getLatitude();
             lon = locationServerProxy.getLongitude();
-            Log.i(TAG, "Lat: "+lat+" Long:" +lon);
-            //dist = locationServerProxy.getDistance();
-            //speed = locationServerProxy.getAverageSpeed();
+            distance = locationServerProxy.getDistance();
+            speed = locationServerProxy.getAverageSpeed();
 
             tvLat.setText("" + lat);
             tvLong.setText(""+lon);
+            tvDist.setText(""+(int) distance+" m");
+            tvSpeed.setText(""+(int) speed+" km/h");
+
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to get sensor data");
             e.printStackTrace();
