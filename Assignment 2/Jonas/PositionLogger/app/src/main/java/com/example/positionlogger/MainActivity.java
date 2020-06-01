@@ -2,20 +2,13 @@ package com.example.positionlogger;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -63,10 +56,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         final Snackbar snackbarStart = Snackbar.make(layout,"Service started",Snackbar.LENGTH_LONG);
         final Snackbar snackbarStop = Snackbar.make(layout,"Service stopped",Snackbar.LENGTH_LONG);
 
-        tvLong = findViewById(R.id.textView4);
-        tvLat = findViewById(R.id.textView2);
-        tvDist = findViewById(R.id.textView6);
-        tvSpeed = findViewById(R.id.textView8);
+        tvLong = findViewById(R.id.tvLon);
+        tvLat = findViewById(R.id.tvLat);
+        tvDist = findViewById(R.id.tvDist);
+        tvSpeed = findViewById(R.id.tvSpeed);
 
         btStart = findViewById(R.id.btStart);
         btExit = findViewById(R.id.btExit);
@@ -99,9 +92,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         btStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG,"Service disconnected");
                 locationServerProxy = null;
                 unbindService(MainActivity.this);
+                Log.i(TAG,"Service disconnected");
                 snackbarStop.show();
             }
         });

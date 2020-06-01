@@ -13,17 +13,28 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This implements a Service which reads location data
@@ -33,6 +44,7 @@ public class LocationService extends Service implements LocationListener {
     public static String TAG = LocationService.class.getCanonicalName();
 
     private Location location;
+    private ArrayList<Location> locationList;
     private double lastLat;
     private double lastLon;
     private double startTime;
@@ -95,6 +107,7 @@ public class LocationService extends Service implements LocationListener {
         super.onCreate();
         impl = new LocationServiceImpl();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationList = new ArrayList<Location>();
 
     }
     @Override
@@ -104,6 +117,7 @@ public class LocationService extends Service implements LocationListener {
         }
         lon = location.getLongitude();
         lat = location.getLatitude();
+        locationList.add(location);
         this.location = location;
         double overallTime = (Calendar.getInstance().getTime().getTime() - startTime) / 1000 / 60 / 60;//in hours
         speed =  (distance / 1000) / overallTime;
@@ -157,6 +171,42 @@ public class LocationService extends Service implements LocationListener {
 //        serviceCallbacks = callbacks;
 //    }
 
+    public static void generateGpx(File file, String name, List<Location> points) {
+
+        String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n";
+        name = "<name>" + name + "</name><trkseg>\n";
+
+        String segments = "";
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        for (Location location : points) {
+            segments += "<trkpt lat=\"" + location.getLatitude() + "\" lon=\"" + location.getLongitude() + "\"><time>" + df.format(new Date(location.getTime())) + "</time></trkpt>\n";
+        }
+
+        String footer = "</trkseg></trk></gpx>";
+
+        try {
+            FileWriter writer = new FileWriter(file, false);
+            writer.append(header);
+            writer.append(name);
+            writer.append(segments);
+            writer.append(footer);
+            writer.flush();
+            writer.close();
+            Log.i(TAG,"trace.gpx created");
+
+        } catch (IOException e) {
+            Log.e("generateGpx", "Error Writing Path",e);
+        }}
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "Unbinding service");
+        //directory: View -> Tool Windows -> Device File Explorer -> sdcard
+        File sdDir = Environment.getExternalStorageDirectory();
+        File myFile = new File (sdDir, "trace.gpx");
+        generateGpx(myFile,"myTrace",locationList);
+        return super.onUnbind(intent);
+    }
 
     @Override
     public void onDestroy() {
