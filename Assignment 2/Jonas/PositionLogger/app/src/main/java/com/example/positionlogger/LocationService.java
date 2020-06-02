@@ -1,31 +1,21 @@
 package com.example.positionlogger;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
-
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.google.android.material.snackbar.Snackbar;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,10 +35,9 @@ public class LocationService extends Service implements LocationListener {
 
     private Location location;
     private ArrayList<Location> locationList;
-    private double lastLat;
-    private double lastLon;
-    private double startTime;
+    private double startTime = 0;
 
+    private boolean skipFirst = true;
 
     //Minimum time between location updates [ms]
     static private final long minTime = 1000;
@@ -110,33 +99,6 @@ public class LocationService extends Service implements LocationListener {
         locationList = new ArrayList<Location>();
 
     }
-    @Override
-    public void onLocationChanged(Location location) {
-        if(this.location != null) {
-            distance = (distance + location.distanceTo(this.location));
-        }
-        lon = location.getLongitude();
-        lat = location.getLatitude();
-        locationList.add(location);
-        this.location = location;
-        double overallTime = (Calendar.getInstance().getTime().getTime() - startTime) / 1000 / 60 / 60;//in hours
-        speed =  (distance / 1000) / overallTime;
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 
     @Nullable
     @Override
@@ -161,15 +123,63 @@ public class LocationService extends Service implements LocationListener {
                         minDistance,  this);
             }
         }
-        startTime = Calendar.getInstance().getTime().getTime();
+
         //location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         return impl;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        //We want to skip the first location because somehow
+        //the first location is the last one from an earlier app usage which
+        //confuses the data.
+        if(skipFirst) {
+            skipFirst = false;
+        } else {
+            if(startTime == 0) {
+                startTime = Calendar.getInstance().getTime().getTime();
+            }
+            if (this.location != null) {
+                distance = (distance + location.distanceTo(this.location));
+            }
+            lon = location.getLongitude();
+            lat = location.getLatitude();
+            locationList.add(location);
+            this.location = location;
+            double overallTime = (Calendar.getInstance().getTime().getTime() - startTime) / 1000 / 60 / 60;//in hours
+            speed = (distance / 1000) / overallTime;
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     //unused
 //    public void setCallBacks(ServiceCallbacks callbacks) {
 //        serviceCallbacks = callbacks;
 //    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "Unbinding service");
+        //directory: View -> Tool Windows -> Device File Explorer -> sdcard
+        File sdDir = Environment.getExternalStorageDirectory();
+        File myFile = new File (sdDir, "trace.gpx");
+        generateGpx(myFile,"myTrace",locationList);
+        return super.onUnbind(intent);
+    }
 
     public static void generateGpx(File file, String name, List<Location> points) {
 
@@ -198,15 +208,6 @@ public class LocationService extends Service implements LocationListener {
             Log.e("generateGpx", "Error Writing Path",e);
         }}
 
-    @Override
-    public boolean onUnbind(Intent intent) {
-        Log.i(TAG, "Unbinding service");
-        //directory: View -> Tool Windows -> Device File Explorer -> sdcard
-        File sdDir = Environment.getExternalStorageDirectory();
-        File myFile = new File (sdDir, "trace.gpx");
-        generateGpx(myFile,"myTrace",locationList);
-        return super.onUnbind(intent);
-    }
 
     @Override
     public void onDestroy() {

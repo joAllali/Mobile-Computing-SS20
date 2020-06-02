@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         View layout = findViewById(R.id.main_layout_id);
         final Snackbar snackbarStart = Snackbar.make(layout,"Service started",Snackbar.LENGTH_LONG);
         final Snackbar snackbarStop = Snackbar.make(layout,"Service stopped",Snackbar.LENGTH_LONG);
+        final Snackbar snackbarUpdate = Snackbar.make(layout,"Values updated",Snackbar.LENGTH_LONG);
+        final Snackbar snackbarGpx = Snackbar.make(layout,"gpx file created",Snackbar.LENGTH_LONG);
 
         tvLong = findViewById(R.id.tvLon);
         tvLat = findViewById(R.id.tvLat);
@@ -95,15 +97,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 locationServerProxy = null;
                 unbindService(MainActivity.this);
                 Log.i(TAG,"Service disconnected");
-                snackbarStop.show();
+                //snackbarStop.show();
+                snackbarGpx.show();
             }
         });
 
         btUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -113,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                                 }
                             }
                         });
+                        snackbarUpdate.show();
 
                     }
 
